@@ -34,16 +34,16 @@ describe Oystercard do
       @card.top_up(Oystercard::MINIMUM_FARE)
     end
     
-    it 'should be able to touch in and change in_journey to true' do
-      @card.touch_in(entry_station_double)
-      expect(@card).to be_in_journey
-    end
+    # it 'should be able to touch in and change in_journey to true' do
+    #   @card.touch_in(entry_station_double)
+    #   expect(@card).to be_in_journey
+    # end
 
-    it 'should be able to touch out and change in_journey to false' do
-      @card.touch_in(entry_station_double)
-      @card.touch_out(exit_station_double)
-      expect(@card).to_not be_in_journey
-    end
+    # it 'should be able to touch out and change in_journey to false' do
+    #   @card.touch_in(entry_station_double)
+    #   @card.touch_out(exit_station_double)
+    #   expect(@card).to_not be_in_journey
+    # end
     
     it 'should raise an error when card does not have enough for minimum fare(1)' do      
       expect { subject.touch_in(entry_station_double) }.to raise_error('insufficient funds')
@@ -59,7 +59,8 @@ describe Oystercard do
 
     let(:entry_station) { double :station }
     let(:exit_station) { double :station }
-    let(:journey){ {entry_station: entry_station, exit_station: exit_station} }
+    let(:started_journey) { double(entry_station: entry_station) }
+    let(:complete_journey) { double(entry_station: entry_station, exit_station: exit_station) }
     
     before do
       @card = Oystercard.new
@@ -70,15 +71,11 @@ describe Oystercard do
       expect(subject.all_journeys).to be_empty
     end
 
-    it '' do 
-
+    it 'should have a journey stored after touching in' do 
+      allow(Journey).to receive(:new).and_return(started_journey)
+      @card.touch_in(entry_station)
+      expect(@card.all_journeys).to eq([started_journey])
     end
-
-    # it 'should have a journey stored after touching in and out' do
-    #   @card.touch_in(entry_station)
-    #   @card.touch_out(exit_station)
-    #   expect(@card.all_journeys).to include journey
-    # end
 
   end
 

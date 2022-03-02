@@ -16,4 +16,16 @@ describe Journey do
     journey.exit_station = exit_station_double
     expect(journey.exit_station).to eq(exit_station_double) 
   end
+
+  it 'should return true for in_journey if exit station is nil' do
+    journey = Journey.new(entry_station_double)
+    expect(journey).to be_in_journey
+  end 
+
+  it 'should return false for in_journey if journey complete' do
+    journey = Journey.new(entry_station_double)
+    journey.exit_station = exit_station_double
+    expect(journey).to_not be_in_journey
+  end
+  
 end
