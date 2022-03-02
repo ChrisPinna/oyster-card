@@ -34,12 +34,12 @@ describe Oystercard do
       @card.top_up(Oystercard::MINIMUM_FARE)
     end
     
-    it 'should be able to touch in and change in_use to true' do
+    it 'should be able to touch in and change in_journey to true' do
       @card.touch_in(entry_station_double)
       expect(@card).to be_in_journey
     end
 
-    it 'should be able to touch and change in_use to false' do
+    it 'should be able to touch out and change in_journey to false' do
       @card.touch_in(entry_station_double)
       @card.touch_out(exit_station_double)
       expect(@card).to_not be_in_journey
@@ -50,20 +50,9 @@ describe Oystercard do
     end
 
     it 'should change the balance by the minimum fare after touching out' do
+      @card.touch_in(entry_station_double)
       expect { @card.touch_out(exit_station_double) }.to change { @card.balance }.by(-Oystercard::MINIMUM_FARE)
     end
-
-    it 'should remember the entry station after touching in' do 
-      @card.touch_in(entry_station_double)
-      expect(@card.entry_station).to eq(entry_station_double)
-    end
-
-    it 'should remove the entry station after touching out' do 
-      @card.touch_in(entry_station_double)
-      @card.touch_out(exit_station_double)
-      expect(@card.entry_station).to eq(nil)
-    end
-
   end
 
   context 'storing journeys' do
@@ -81,11 +70,15 @@ describe Oystercard do
       expect(subject.all_journeys).to be_empty
     end
 
-    it 'should have a journey stored after touching in and out' do
-      @card.touch_in(entry_station)
-      @card.touch_out(exit_station)
-      expect(@card.all_journeys).to include journey
+    it '' do 
+
     end
+
+    # it 'should have a journey stored after touching in and out' do
+    #   @card.touch_in(entry_station)
+    #   @card.touch_out(exit_station)
+    #   expect(@card.all_journeys).to include journey
+    # end
 
   end
 
