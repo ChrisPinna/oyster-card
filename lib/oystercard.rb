@@ -33,10 +33,6 @@ class Oystercard
     @current_journey.end_journey(station)
   end
 
-  # def in_journey?
-  #   @all_journeys.last.exit_station == nil
-  # end
-
   private
 
   def deduct(amount)

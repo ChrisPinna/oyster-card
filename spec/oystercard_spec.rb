@@ -34,17 +34,6 @@ describe Oystercard do
       @card.top_up(Oystercard::MINIMUM_FARE)
     end
     
-    # it 'should be able to touch in and change in_journey to true' do
-    #   @card.touch_in(entry_station_double)
-    #   expect(@card).to be_in_journey
-    # end
-
-    # it 'should be able to touch out and change in_journey to false' do
-    #   @card.touch_in(entry_station_double)
-    #   @card.touch_out(exit_station_double)
-    #   expect(@card).to_not be_in_journey
-    # end
-    
     it 'should raise an error when card does not have enough for minimum fare(1)' do      
       expect { subject.touch_in(entry_station_double) }.to raise_error('insufficient funds')
     end
