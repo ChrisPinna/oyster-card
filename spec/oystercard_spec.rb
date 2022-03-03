@@ -71,13 +71,13 @@ describe Oystercard do
     end
 
     it 'should have an empty list of journeys by default' do
-      expect(subject.all_journeys).to be_empty
+      expect(subject.journey_history).to be_empty
     end
 
     it 'should have a journey stored after touching in' do 
       allow(Journey).to receive(:new).and_return(started_journey)
       @card.touch_in(entry_station)
-      expect(@card.all_journeys).to eq([started_journey])
+      expect(@card.journey_history).to eq([started_journey])
     end
 
   end
