@@ -51,8 +51,8 @@ class Oystercard
   end
 
   def check_for_incomplete_journey
-    if @current_journey.in_journey? == true
-      deduct(@current_journey.calculate_fare)
+    if journey_history != []
+      deduct(@current_journey.calculate_fare) if @current_journey.in_journey? == true
     end
   end
 
