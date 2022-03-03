@@ -20,7 +20,7 @@ class Journey
   end
 
   def calculate_fare
-    return PENALTY_FARE if exit_station == nil || entry_station == nil
+    return PENALTY_FARE if @exit_station == nil || @entry_station == nil
     return MINIMUM_FARE if @exit_station != nil
   end
 end
