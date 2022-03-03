@@ -27,20 +27,34 @@ describe Oystercard do
   context 'touch in / touch out support tests' do
     
     let(:entry_station_double) { double :entry_station_double }
-    let(:exit_station_double) { double :exit_station_double}
+    let(:exit_station_double) { double :exit_station_double }
+    let(:journey_double) { double :journey_double }
 
-    before do
-      @card = Oystercard.new
-      @card.top_up(Oystercard::MINIMUM_FARE)
-    end
-    
-    it 'should raise an error when card does not have enough for minimum fare(1)' do      
+    it 'should raise an error when card does not have enough for minimum fare(1)' do  
+      allow(Journey).to receive(:new).and_return(journey_double)    
       expect { subject.touch_in(entry_station_double) }.to raise_error('insufficient funds')
     end
 
+    before do
+      @card = Oystercard.new
+      @card.top_up(Oystercard::LIMIT)
+    end
+
     it 'should change the balance by the minimum fare after touching out' do
+      allow(Journey).to receive(:new).and_return(entry_station_double)   
       @card.touch_in(entry_station_double)
+      allow(@card.current_journey).to receive(:end_journey).and_return(nil)
+      allow(@card.current_journey).to receive(:calculate_fare).and_return(Oystercard::MINIMUM_FARE)
+      allow(@card.current_journey).to receive(:in_journey?).and_return(true)
       expect { @card.touch_out(exit_station_double) }.to change { @card.balance }.by(-Oystercard::MINIMUM_FARE)
+    end
+
+    it 'should change balance by penalty fare when touch out without touching in' do
+      allow(Journey).to receive(:new).and_return(journey_double)
+      allow(journey_double).to receive(:end_journey).and_return(nil)
+      allow(journey_double).to receive(:calculate_fare).and_return(6)
+      allow(@card.current_journey).to receive(:in_journey?).and_return(false)
+      expect { @card.touch_out(exit_station_double) }.to change { @card.balance }.by(-6)
     end
   end
 

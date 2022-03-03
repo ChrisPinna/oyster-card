@@ -28,9 +28,12 @@ class Oystercard
   end
 
   def touch_out(station)
-    deduct(MINIMUM_FARE)
-    # @all_journeys.last.exit_station = station
+    if @current_journey.in_journey? == false || @all_journeys.empty? == true
+      @current_journey = Journey.new
+      @all_journeys << @current_journey
+    end
     @current_journey.end_journey(station)
+    deduct(@current_journey.calculate_fare)
   end
 
   private
