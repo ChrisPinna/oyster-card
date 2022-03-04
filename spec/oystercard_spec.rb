@@ -30,12 +30,6 @@ describe Oystercard do
     let(:exit_station_double) { double :exit_station_double }
     let(:journey_double) { double :journey_double }
 
-    it 'should raise an error when card does not have enough for minimum fare(1)' do  
-      allow(Journey).to receive(:new).and_return(journey_double)    
-      allow(@card.current_journey).to receive(:in_journey?).and_return(false)
-      expect { subject.touch_in(entry_station_double) }.to raise_error('insufficient funds')
-    end
-
     before do
       @card = Oystercard.new
       @card.top_up(Oystercard::LIMIT)
@@ -43,11 +37,17 @@ describe Oystercard do
     # end_journey => nil, calculate_fare => Oystercard::MINIMUM_FARE
     end
 
+    it 'should raise an error when card does not have enough for minimum fare(1)' do  
+      allow(Journey).to receive(:new).and_return(journey_double)
+      allow(journey_double).to receive(:in_journey?).and_return(false)
+      expect { subject.touch_in(entry_station_double) }.to raise_error('insufficient funds')
+    end
+
     # Question for coach - do we need all these stubs? Are we actually testing behaviour here? We've mocked out a lot of it
     it 'should change the balance by the minimum fare after touching out for a normal journey' do
       journey_double = double(:journey_double, :end_journey => nil, :calculate_fare => Oystercard::MINIMUM_FARE)
       allow(Journey).to receive(:new).and_return(journey_double)
-      allow(@card.current_journey).to receive(:in_journey?).and_return(false)
+      allow(journey_double).to receive(:in_journey?).and_return(false)
       @card.touch_in(entry_station_double)
       # allow(@card.current_journey).to receive(:end_journey).and_return(nil)
       # allow(@card.current_journey).to receive(:calculate_fare).and_return(Oystercard::MINIMUM_FARE)
@@ -59,12 +59,12 @@ describe Oystercard do
       allow(Journey).to receive(:new).and_return(journey_double)
       allow(journey_double).to receive(:end_journey).and_return(nil)
       allow(journey_double).to receive(:calculate_fare).and_return(6)
-      allow(@card.current_journey).to receive(:in_journey?).and_return(false)
+      allow(journey_double).to receive(:in_journey?).and_return(false)
       expect { @card.touch_out(exit_station_double) }.to change { @card.balance }.by(-6)
     end
 
     it 'should deduct penalty fare when touching in without touching out of previous journey' do
-      allow(@card.current_journey).to receive(:in_journey?).and_return(false)
+      allow(journey_double).to receive(:in_journey?).and_return(false)
       @card.touch_in(entry_station_double)
       allow(@card.current_journey).to receive(:in_journey?).and_return(true)
       expect { @card.touch_in(entry_station_double) }.to change { @card.balance }.by(-6)
@@ -88,8 +88,8 @@ describe Oystercard do
     end
 
     it 'should have a journey stored after touching in' do 
-      allow(@card.current_journey).to receive(:in_journey?).and_return(false)
       allow(Journey).to receive(:new).and_return(started_journey)
+      allow(started_journey).to receive(:in_journey?).and_return(false)
       @card.touch_in(entry_station)
       expect(@card.journey_history).to eq([started_journey])
     end

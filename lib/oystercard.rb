@@ -5,6 +5,7 @@ class Oystercard
   attr_reader :balance, :current_journey, :journey_history
   LIMIT = 90
   EXCEEDS_MESSAGE = "Denied. Balance would exceed #{LIMIT}"
+  # We'll need to remove this when we use stations for calculating fares
   MINIMUM_FARE = 1
 
   def initialize
@@ -15,10 +16,6 @@ class Oystercard
   def top_up(amount)
     raise EXCEEDS_MESSAGE if exceeds?(amount)
     @balance += amount
-  end
-
-  def exceeds?(amount)
-    @balance + amount > LIMIT
   end
 
   def touch_in(station)
@@ -35,6 +32,10 @@ class Oystercard
 
   private
 
+  def exceeds?(amount)
+    @balance + amount > LIMIT
+  end
+
   def new_journey(station = nil)
     @current_journey = Journey.new(station)
     add_journey_to_journey_history
@@ -45,15 +46,13 @@ class Oystercard
   end
 
   def check_for_entry_station
-    if @current_journey.in_journey? == false || @journey_history.empty? == true
+    if @journey_history.empty? == true || @current_journey.in_journey? == false
       new_journey
     end
   end
 
   def check_for_incomplete_journey
-    if journey_history != []
-      deduct(@current_journey.calculate_fare) if @current_journey.in_journey? == true
-    end
+    deduct(@current_journey.calculate_fare) if journey_history != [] && @current_journey.in_journey? == true
   end
 
   def deduct(amount)
